@@ -5,7 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-
+=begin
 Gender.create!(gender: "Men's")
 Gender.create!(gender: "Lady's")
 Gender.create!(gender: "Unisex")
@@ -22,11 +22,26 @@ Size.create!(size: "XL")
 Size.create!(size: "XXL")
 
 User.create!(name:  "taniiiiim",
-             email: "tani.yuuki@lmi.ne.jp")
-
+             real_name: "Yuki Tani",
+             email: "tani.yuuki@lmi.ne.jp",
+             password: "Treasure1131",
+             password_confirmation: "Treasure1131",
+             gender: "Male",
+             birthdate: "1993-12-01",
+             code: "241-0836",
+             address: "神奈川県横浜市旭区万騎が原64-23")
+=end
 User.create!(name:  "Example User",
-             email: "example@railstutorial.org")
+             real_name: "Example",
+             email: "example@railstutorial.org",
+             password: "Treasure1131",
+             password_confirmation: "Treasure1131",
+             gender: "Male",
+             birthdate: "1993-12-01",
+             code: "241-0836",
+             address: "神奈川県横浜市旭区万騎が原64-23")
 
+=begin
 100000.times do |n|
   name  = Faker::Name.name
   email = "example-#{n+1}@railstutorial.org"
@@ -40,4 +55,4 @@ User.create!(name:  "Example User",
                   price: Random.rand(10000) + 1,
                   abstract: email)
 end
-
+=end
