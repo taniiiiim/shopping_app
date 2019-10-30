@@ -1,0 +1,54 @@
+Rails.application.routes.draw do
+
+  root 'static_pages#home'
+  get '/help', to: 'static_pages#help'
+  get '/about', to: 'static_pages#about'
+  get '/contact', to: 'static_pages#contact'
+
+  get '/signup', to: 'users#new'
+  post '/signup', to: 'users#create'
+
+  get '/login', to: 'sessions#new'
+  post '/login', to: 'sessions#reate'
+  delete '/logout', to: 'sessions#destroy'
+
+  get '/search', to: 'search#new'
+  post '/search', to: 'search#create'
+
+  post '/cart', to: 'cart#create'
+  delete 'cart', to: 'cart#destroy'
+
+  resources :users
+  resources :products
+  resources :orders
+
+  get 'orders/show'
+
+  get 'orders/new'
+
+  get 'orders/index'
+
+  get 'orders/edit'
+
+  get 'products/show'
+
+  get 'products/new'
+
+  get 'products/edit'
+
+  get 'search/new'
+
+  get 'sessions/new'
+
+  get 'users/show'
+
+  get 'users/new'
+
+  get 'users/index'
+
+  get 'users/edit'
+
+
+
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+end
