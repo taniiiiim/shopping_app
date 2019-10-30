@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   get '/signup', to: 'users#new'
   post '/signup', to: 'users#create'
+  get '/users/:id/exit', to: 'users#exit'
 
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
@@ -21,34 +22,6 @@ Rails.application.routes.draw do
   resources :users
   resources :products
   resources :orders
-
-  get 'orders/show'
-
-  get 'orders/new'
-
-  get 'orders/index'
-
-  get 'orders/edit'
-
-  get 'products/show'
-
-  get 'products/new'
-
-  get 'products/edit'
-
-  get 'search/new'
-
-  get 'sessions/new'
-
-  get 'users/show'
-
-  get 'users/new'
-
-  get 'users/index'
-
-  get 'users/edit'
-
-
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

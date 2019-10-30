@@ -9,7 +9,7 @@
       <li><%= link_to "Contact", contact_path %></li>
       <li><a href="https://www.lmi.ne.jp/">News</a></li>
       <% if logged_in? %>
-        <li><%= link_to "Exit", "#" %></li>
+        <li><%= link_to "Exit", "/users/#{current_user.id}/exit" %></li>
       <% end %>
     </ul>
   </nav>
