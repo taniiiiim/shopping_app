@@ -1,0 +1,8 @@
+<li id="detail-<%= detail.id %>">
+  <span class="product_name">
+  <%= link_to Product.find(detail.product_id).name, Product.find(detail.product_id) %></span>
+  <%= image_tag Product.find(detail.product_id).picture.url if Product.find(detail.product_id).picture? %>
+  <span class="product_info">Price: ¥<%= Product.find(detail.product_id).price %></span>
+  <span class="product_info">Category: <%= Category.find(Product.find(detail.product_id).category_id).category %></span>
+  <span class="product_info">Amount: <%= detail.amount %></span>
+</li>

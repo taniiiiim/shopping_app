@@ -1,0 +1,56 @@
+<h3>Search Products</h3>
+<form accept-charset="UTF-8" action="/search" class="search"
+      id="search" method="get">
+
+  <div class="field">
+  <label for="name">Name</label>
+  <input id="name" name="name" type="text" placeholder="Name" />
+
+  <label for="gender">Gender</label>
+  <select id="gender" name="gender_id">
+  <option value=""></option>
+  <option value="1">Men's</option>
+  <option value="2">Lady's</option>
+  <option value="3">Unisex</option>
+  </select>
+
+  <label for="size">Size</label>
+  <select id="size" name="size_id">
+  <option value=""></option>
+  <option value="1">S</option>
+  <option value="2">M</option>
+  <option value="3">L</option>
+  <option value="4">XL</option>
+  <option value="5">XXL</option>
+  </select>
+
+
+  <label for="category">Category</label>
+  <select id="category" name="category_id">
+  <option value=""></option>
+  <option value="1">Coat</option>
+  <option value="2">Parker</option>
+  <option value="3">Shirt</option>
+  <option value="4">T-shirt</option>
+  <option value="5">Pants</option>
+  <option value="6">Underware</option>
+  <option value="7">Skirt</option>
+  <option value="8">Jacket</option>
+  <option value="9">Short-pants</option>
+  <option value="10">Accessory</option>
+  </select>
+
+  <label for="price">Price(max)</label>
+  <input id="price" name="price" type="number" placeholder="Price(max)" />
+
+
+  </div>
+  <input class="btn btn-primary" name="commit" type="submit"
+         value="Search" />
+</form>
+
+<h3>
+<% if logged_in? && current_user.admin %>
+  <%= link_to "Add Products", new_product_path %>
+<% end %>
+</h3>

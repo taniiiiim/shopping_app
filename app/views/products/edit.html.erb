@@ -1,2 +1,49 @@
-<h1>Products#edit</h1>
-<p>Find me in app/views/products/edit.html.erb</p>
+<% provide(:title, "Update a product") %>
+
+<h1>Update a product</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@product) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+      <div class="field">
+        <%= f.label :name  %>
+        <%= f.text_field :name, placeholder: "Name", class: 'form-control' %>
+        <%= f.label :picture  %>
+        <%= f.file_field :picture, class: 'form-control' %>
+        <%= f.label :gender_id  %>
+        <%= f.select :gender_id, [["", ""], ["Men's", 1], ["Lady's", 2], ["Unisex", 3]], class: 'form-control' %>
+        <%= f.label :category_id  %>
+        <%= f.select :category_id, [["", ""], ["Coat", 1], ["Parker", 2], ["Shirt", 3], ["T-shirt", 4], ["Pants", 5],
+            ["Underware", 6], ["Skirt", 7], ["Jacket", 8], ["Short-pants", 9], ["Accessory", 10]], class: 'form-control' %>
+        <%= f.label :size_id  %>
+        <%= f.select :size_id, [["", ""], ["S", 1], ["M", 2], ["L", 3], ["XL", 4], ["XXL", 5]], class: 'form-control' %>
+        <%= f.label :price  %>
+        <%= f.number_field :price, placeholder: "Price", class: 'form-control' %>
+        <%= f.label :abstract  %>
+        <%= f.text_area :abstract, placeholder: "Abstract", class: 'form-control' %>
+      </div>
+      <%= f.submit "Update a product", class: "btn btn-primary" %>
+    <% end %>
+
+        <script type="text/javascript">
+          $('#micropost_picture').bind('change', function() {
+            var size_in_megabytes = this.files[0].size/1024/1024;
+            if (size_in_megabytes > 5) {
+              alert('Maximum file size is 5MB. Please choose a smaller file.');
+            }
+          });
+        </script>
+
+    <%= form_for(@stock) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+      <div class="field">
+        <%= f.label :stock %>
+        <%= f.number_field :stock, placeholder: "Stock", class: 'form-control' %>
+        <%= hidden_field_tag :stock_id, Stock.find_by(product_id: @product.id).id %>
+      </div>
+      <%= f.submit "Update product stocks", class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>

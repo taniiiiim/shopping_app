@@ -21,11 +21,17 @@
         <%= "Birthdate: " + @user.birthdate.to_s %>
       </p>
       <p>
-        <%= "Address: 〒" + @user.code %>
+        <%= "Address: " + @user.code %>
       </p>
       <p>
         <%= @user.address %>
       </p>
     </section>
   </aside>
+  <div class="col-md-8">
+    <h3>Orders Feed</h3>
+    <ol class="orders">
+      <%= render @orders %>
+    </ol>
+  </div>
 </div>

@@ -14,14 +14,24 @@ Rails.application.routes.draw do
   delete '/logout', to: 'sessions#destroy'
 
   get '/search', to: 'search#new'
-  post '/search', to: 'search#create'
+
+  post '/stocks',to: 'stocks#create'
+
+  get '/orders/:id/cancel', to: 'orders#cancel'
 
   post '/cart', to: 'cart#create'
-  delete 'cart', to: 'cart#destroy'
+  get '/cart/:id', to: 'cart#show'
+  get "/cart/:id/edit", to: 'cart#edit'
+  post "/cart/:id/edit", to: 'cart#edit'
+  patch "/cart/:id", to: 'cart#update'
+  delete '/cart/:id', to: 'cart#destroy'
 
   resources :users
   resources :products
   resources :orders
+  resources :account_activations, only: [:edit]
+  resources :password_resets,     only: [:new, :create, :edit, :update]
+  resources :stocks,              only: [:create, :update]
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end

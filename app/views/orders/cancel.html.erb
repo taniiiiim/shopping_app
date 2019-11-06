@@ -1,0 +1,26 @@
+<% provide(:title, 'Cancel an order') %>
+<h1>Cancel an order</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+
+    <ol class="orders">
+      <span class="order_id">
+        <%= link_to "Order No. #{@order.id}", @order %></span>
+      <span class="order_info">
+      Total: ¥<%= sum(@order) %></span>
+    </ol>
+
+    <%= form_for(@order, method: :delete, data: { confirm: "You sure?" }) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password, placeholder: "Password", class: 'form-control' %>
+
+      <%= f.label :password_confirmation, "Confirmation" %>
+      <%= f.password_field :password_confirmation, placeholder: "Confirmation", class: 'form-control' %>
+
+      <%= f.submit "Cancel an order", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>

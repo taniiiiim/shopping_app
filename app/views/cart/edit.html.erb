@@ -1,0 +1,36 @@
+<% provide(:title, "Check an order") %>
+
+<h1>Confirm an order</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+
+    <%= form_for(@order, url: "/cart/#{current_order.id}", html: { method: "PATCH" }) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+    <ol class="orders">
+      <span class="order_info">
+      Total: ¥<%= sum(@order) %></span>
+    </ol>
+    <ol class="products">
+      <%= render @order.details %>
+    </ol>
+
+    <ol class="orders">
+    <span class="timestamp">
+      Cart created <%= time_ago_in_words(@order.cart_created_at) %> ago.
+    </span>
+    </ol>
+
+      <%= f.label :code  %>
+      <%= f.text_field :code, placeholder: "Code", class: 'form-control' %>
+      <%= f.label :address  %>
+      <%= f.text_field :address, placeholder: "Address", class: 'form-control' %>
+      <label for="credit_card_number">Credit card number</label>
+      <input id="credit_card_number" name="credit_card_number" type="text" placeholder="xxxx-xxxx-xxxx-xxxx" class='form-control'/>
+      <%= hidden_field_tag :order_id, @order.id %>
+      <%= f.submit "Confirm an order", class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>

@@ -1,2 +1,46 @@
-<h1>Products#show</h1>
-<p>Find me in app/views/products/show.html.erb</p>
+<% provide(:title, "Product details") %>
+
+<h1>Product details</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <ol class="products">
+      <span class="product_name">
+      <%= link_to @product.name, product_path(@product.id) %></span>
+      <%= image_tag @product.picture.url if @product.picture? %>
+      <span class="product_info">Price: ¥<%= @product.price %></span>
+      <span class="product_info">Category: <%= Category.find(@product.category_id).category %></span>
+      <span class="product_info">
+      <% if Stock.find_by(product_id: @product.id).stock > 100 %>
+      Stock: Exist
+      <% elsif Stock.find_by(product_id: @product.id).stock > 0 %>
+      Stock: Only a few left
+      <% else %>
+      Stock: None
+      <% end %>
+      </span>
+
+      <span class="abstract">Abstract</span>
+      <span class="abstract jumbotron"_><%= @product.abstract %></span>
+      <span class="timestamp">
+        Added <%= time_ago_in_words(@product.created_at) %> ago.
+      </span>
+      <span class="timestamp">
+        Updated <%= time_ago_in_words(@product.updated_at) %> ago.
+      </span>
+      <span class="timestamp">
+        <% if logged_in? && current_user.admin %>
+          <%= link_to "Update", edit_product_path(@product.id) %>
+          <%= link_to "Delete", product_path(@product.id), method: :delete,
+                                           data: { confirm: "You sure?" } %>
+        <% end %>
+      </span>
+    </ol>
+    <%= form_for(@detail, url: '/cart', html: {method: 'POST'}) do |f| %>
+      <%= hidden_field_tag :product_id, @product.id %>
+      <%= f.label :amount %>
+      <%= f.number_field :amount, placeholder: "Amount" %>
+      <%= f.submit "Add this item to the cart", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</div>

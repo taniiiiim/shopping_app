@@ -1,0 +1,12 @@
+<li id="order-<%= order.id %>">
+  <span class="order_id">
+  <%= link_to "No. #{order.id}", order %></span>
+  <span class="order_info">Total: ¥<%= sum(order) %></span>
+  <span class="timestamp">
+    Ordered <%= time_ago_in_words(order.ordered_at) %> ago.
+  </span>
+  <span class="timestamp">
+      <%= link_to "Change", edit_order_path(order) %>
+      <%= link_to "Cancel", "/orders/#{order.id}/cancel" %>
+  </span>
+</li>

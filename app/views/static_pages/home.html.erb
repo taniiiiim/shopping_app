@@ -1,14 +1,12 @@
-<div class="center jumbotron">
-  <h1>Welcome to Taniiiiim Shopping App</h1>
+<div class="row">
+  <aside class="col-md-4">
+    <section class="product_form">
+      <%= render 'shared/product1_form' %>
+    </section>
 
-  <h2>
-    This is the home page for the
-    <a href="https://railstutorial.jp/">Ruby on Rails Tutorial</a>
-    sample application.
-  </h2>
-
-  <%= link_to "Sign up now!", '#', class: "btn btn-lg btn-primary" %>
+  </aside>
+  <div class="col-md-8">
+    <h3>Products Feed</h3>
+    <%= render 'shared/feed' %>
+  </div>
 </div>
-
-<%= link_to image_tag("rails.png", alt: "Rails logo"),
-            'http://rubyonrails.org/' %>

@@ -1,2 +1,29 @@
-<h1>Orders#edit</h1>
-<p>Find me in app/views/orders/edit.html.erb</p>
+<% provide(:title, "Change destination") %>
+
+<h1>Change destination</h1>
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <%= form_for(@order) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+    <ol class="orders">
+      <span class="order_id">
+        <%= link_to "Order No. #{@order.id}", @order %></span>
+      <span class="order_info">
+      Total: ¥<%= sum(@order) %></span>
+    </ol>
+    <ol class="products">
+      <%= render @order.details %>
+    </ol>
+
+      <div class="field">
+        <%= f.label :code  %>
+        <%= f.text_field :code, placeholder: "Code", class: 'form-control' %>
+        <%= f.label :address  %>
+        <%= f.text_field :address, placeholder: "Address", class: 'form-control' %>
+      </div>
+      <%= f.submit "Change destination", class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>

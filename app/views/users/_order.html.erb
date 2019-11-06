@@ -1,0 +1,13 @@
+<li id="order-<%= order.id %>">
+  <span class="product_name">
+  <%= link_to "No. #{order.id.to_s}", "#"%></span>
+  <span class="product_info">Total: ¥<%= order.total %></span>
+  <span class="timestamp">
+    Ordered <%= time_ago_in_words(order.ordered_at) %> ago.
+  </span>
+  <span class="timestamp">
+      <%= link_to "Update", edit_product_path(product) %>
+      <%= link_to "Delete", product, method: :delete,
+                                       data: { confirm: "You sure?" } %>
+  </span>
+</li>

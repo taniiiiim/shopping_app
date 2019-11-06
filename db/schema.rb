@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191030034543) do
+ActiveRecord::Schema.define(version: 20191105021837) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "category"
@@ -20,13 +20,13 @@ ActiveRecord::Schema.define(version: 20191030034543) do
   end
 
   create_table "details", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "orders_id"
-    t.bigint "products_id"
+    t.bigint "order_id"
+    t.bigint "product_id"
     t.integer "amount"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["orders_id"], name: "index_details_on_orders_id"
-    t.index ["products_id"], name: "index_details_on_products_id"
+    t.index ["order_id"], name: "index_details_on_order_id"
+    t.index ["product_id"], name: "index_details_on_product_id"
   end
 
   create_table "genders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -37,7 +37,7 @@ ActiveRecord::Schema.define(version: 20191030034543) do
   end
 
   create_table "orders", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "users_id"
+    t.bigint "user_id"
     t.integer "total"
     t.string "code"
     t.string "address"
@@ -46,7 +46,8 @@ ActiveRecord::Schema.define(version: 20191030034543) do
     t.datetime "ordered_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["users_id"], name: "index_orders_on_users_id"
+    t.datetime "cart_created_at"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "products", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -58,6 +59,7 @@ ActiveRecord::Schema.define(version: 20191030034543) do
     t.string "abstract"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "picture"
     t.index ["category_id"], name: "index_products_on_category_id"
     t.index ["gender_id"], name: "index_products_on_gender_id"
     t.index ["name"], name: "index_products_on_name", unique: true
@@ -72,11 +74,11 @@ ActiveRecord::Schema.define(version: 20191030034543) do
   end
 
   create_table "stocks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.bigint "products_id"
+    t.bigint "product_id"
     t.integer "stock"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["products_id"], name: "index_stocks_on_products_id"
+    t.index ["product_id"], name: "index_stocks_on_product_id"
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
@@ -89,22 +91,22 @@ ActiveRecord::Schema.define(version: 20191030034543) do
     t.string "code"
     t.string "address"
     t.string "remember_digest"
-    t.boolean "activated"
-    t.string "activation_token"
+    t.boolean "activated", default: false
+    t.string "activation_digest"
     t.datetime "activated_at"
-    t.datetime "reset_token"
+    t.datetime "reset_digest"
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "admin"
+    t.boolean "admin", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "details", "orders", column: "orders_id"
-  add_foreign_key "details", "products", column: "products_id"
-  add_foreign_key "orders", "users", column: "users_id"
+  add_foreign_key "details", "orders"
+  add_foreign_key "details", "products"
+  add_foreign_key "orders", "users"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "genders"
   add_foreign_key "products", "sizes"
-  add_foreign_key "stocks", "products", column: "products_id"
+  add_foreign_key "stocks", "products"
 end

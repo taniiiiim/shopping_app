@@ -1,0 +1,29 @@
+<li id="product-<%= product.id %>">
+  <span class="product_name">
+  <%= link_to product.name, product_path(product.id) %></span>
+  <%= image_tag product.picture.url if product.picture? %>
+  <span class="product_info">Price: ¥<%= product.price %></span>
+  <span class="product_info">Category: <%= Category.find(product.category_id).category %></span>
+  <span class="product_info">
+  <% if Stock.find_by(product_id: product.id).stock > 100 %>
+  Stock: Exist
+  <% elsif Stock.find_by(product_id: product.id).stock > 0 %>
+  Stock: Only a few left
+  <% else %>
+  Stock: None
+  <% end %>
+  </span>
+  <span class="timestamp">
+    Added <%= time_ago_in_words(product.created_at) %> ago.
+  </span>
+  <span class="timestamp">
+    Updated <%= time_ago_in_words(product.updated_at) %> ago.
+  </span>
+  <span class="timestamp">
+    <% if logged_in? && current_user.admin %>
+      <%= link_to "Update", edit_product_path(product.id) %>
+      <%= link_to "Delete", product_path(product.id), method: :delete,
+                                       data: { confirm: "You sure?" } %>
+    <% end %>
+  </span>
+</li>
