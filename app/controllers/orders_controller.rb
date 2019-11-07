@@ -1,15 +1,10 @@
 class OrdersController < ApplicationController
   before_action :logged_in_user
   before_action :correct_user_for_order, only: [:show, :edit, :update, :cancel, :destroy]
+  before_action :check_expiration,       only: [:edit, :update, :cancel, :destroy]
 
   def show
     @order = Order.find(params[:id])
-  end
-
-  def new
-  end
-
-  def create
   end
 
   def edit
@@ -39,6 +34,7 @@ class OrdersController < ApplicationController
       flash[:success] = "Order deleted"
       redirect_to @user
     else
+      flash[:danger] = "Invalid password"
       render 'cancel'
     end
   end
@@ -47,6 +43,14 @@ class OrdersController < ApplicationController
 
   def order_params
     params.require(:order).permit(:code, :address, :password, :password_confirmation)
+  end
+
+  def check_expiration
+    @order = Order.find(params[:id])
+    if @order.expired?
+      flash[:danger] = "An order cannot be changed or cancel after 30 minutes after confimation."
+      redirect_to @order
+    end
   end
 
 end

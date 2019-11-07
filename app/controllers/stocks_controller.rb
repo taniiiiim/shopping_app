@@ -4,11 +4,17 @@ class StocksController < ApplicationController
 
   def update
     @stock = Stock.find(params[:stock_id])
-    if @stock.update_attribute(:stock, params[:stock][:stock])
-      flash[:success] = "Stock updated!"
-      redirect_to Product.find(@stock.product_id)
+    @product = Product.find(@stock.product_id)
+    if params[:stock][:stock].to_i >= 0
+      if @stock.update_attribute(:stock, params[:stock][:stock])
+        flash[:success] = "Stock updated!"
+        redirect_to @product
+      else
+        render 'products/edit'
+      end
     else
-      render 'products/edit'
+      flash[:danger] = "invalid stock information!"
+      redirect_to edit_product_path(@product)
     end
   end
 

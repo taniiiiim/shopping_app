@@ -48,7 +48,7 @@ module CartHelper
     end
 
     def destroy_cart
-      cancel(current_order) if
+      cancel(current_order)
       @current_order = nil
     end
 

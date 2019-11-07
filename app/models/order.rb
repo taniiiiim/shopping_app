@@ -4,6 +4,7 @@ class Order < ApplicationRecord
   belongs_to :user
   has_many :details, dependent: :destroy
 
+  validates :user_id, presence: true
   VALID_CODE_REGEX = /\A[0-9]+[0-9]+[0-9]+[-]+[0-9]+[0-9]+[0-9]+[0-9]\z/i
   validates :code, presence: true, length: { is: 8 }, format: { with: VALID_CODE_REGEX }, allow_nil: true
   validates :address, presence: true, length: { maximum: 255 }, allow_nil: true
@@ -37,6 +38,10 @@ class Order < ApplicationRecord
 
   def cart_created_expired?
     cart_created_at < 30.minutes.ago
+  end
+
+  def expired?
+    ordered_at < 30.minutes.ago
   end
 
   def authenticated?(attribute, token)

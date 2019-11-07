@@ -15,8 +15,6 @@ Rails.application.routes.draw do
 
   get '/search', to: 'search#new'
 
-  post '/stocks',to: 'stocks#create'
-
   get '/orders/:id/cancel', to: 'orders#cancel'
 
   post '/cart', to: 'cart#create'

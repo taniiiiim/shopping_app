@@ -14,6 +14,7 @@ RSpec.describe User, type: :model do
                    birthdate: "1993-12-01",
                    code: "241-0836",
                    address: "神奈川県横浜市旭区万騎が原64-23")
+      @order = Order.new(user_id: @user.id)
     end
 
     it "valid user with valid information" do
@@ -136,6 +137,12 @@ RSpec.describe User, type: :model do
       expect(@user).to be_valid
       @user.address = "a" * 256
       expect(@user).not_to be_valid
+    end
+
+    it "order should be deleted when user was deleted" do
+      count = Order.count
+      @user.destroy
+      expect(count).to eq Order.count
     end
 
   end

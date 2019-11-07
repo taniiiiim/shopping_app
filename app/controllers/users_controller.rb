@@ -4,7 +4,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    @orders = @user.orders.paginate(page: params[:page])
+    @orders = @user.orders.where("ordered = ?", true).paginate(page: params[:page])
   end
 
   def new
@@ -49,6 +49,7 @@ class UsersController < ApplicationController
       log_out
       redirect_to root_url
     else
+      flash[:danger] = "Invalid email/password combination"
       render 'exit'
     end
   end

@@ -34,6 +34,7 @@ class ProductsController < ApplicationController
       flash[:success] = "A product updated"
       redirect_to @product
     else
+      @stock = Stock.find_by(product_id: @product.id)
       render 'edit'
     end
   end

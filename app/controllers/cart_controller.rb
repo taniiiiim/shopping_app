@@ -1,9 +1,11 @@
 class CartController < ApplicationController
   before_action :logged_in_user
+  before_action :available_cart, only: [:show, :edit, :update, :destroy]
   before_action :check_expiration, only: [:show, :edit, :update, :destroy]
 
   def show
     @order = Order.find(params[:id])
+    create_cart(@order)
   end
 
   def create
@@ -26,7 +28,7 @@ class CartController < ApplicationController
         @order = Order.create(user_id: current_user.id, ordered: false, cart_created_at: Time.zone.now)
         Detail.create(order_id: @order.id, product_id: @product.id, amount: params[:detail][:amount])
         flash[:success] = "Cart created!"
-        flash[:success] += "Product added to your cart!"
+        flash[:success] += " Product added to your cart!"
       end
       create_cart(@order)
       redirect_to @product
@@ -39,6 +41,7 @@ class CartController < ApplicationController
 
   def edit
     @order = Order.find(params[:id])
+    create_cart(@order)
   end
 
   def update
@@ -64,12 +67,20 @@ class CartController < ApplicationController
 
   private
 
+    def available_cart
+      unless any_carts?
+        flash[:danger] = "The cart is no longer available."
+        redirect_to root_url
+      end
+    end
+
     def check_expiration
       @order = Order.find(params[:id])
-      if !(any_carts?) || @order.cart_created_expired?
+      if @order.cart_created_expired?
         destroy_cart
         @order.destroy if @order
         flash[:danger] = "The cart has expired."
+        flash[:danger] += " Please add the products again!"
         redirect_to root_url
       end
     end

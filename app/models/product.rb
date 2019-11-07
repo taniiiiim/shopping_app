@@ -12,7 +12,7 @@ class Product < ApplicationRecord
   validates :gender_id, presence: :true
   validates :category_id, presence: :true
   validates :size_id, presence: :true
-  validates :price, presence: :true, numericality: { less_than: 100000}
+  validates :price, presence: :true, numericality: { more_than_or_equal_to: 0, less_than_or_equal_to: 100000}
   validates :abstract, presence: :true, length: { maximum: 512 }
   validate  :picture_size
 
