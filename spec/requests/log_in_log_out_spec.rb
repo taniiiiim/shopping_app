@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "log in / log out", type: :request do
 
+  include SessionsHelper
+
   before do
     post signup_path, params: { user: {name:  "Example User",
                  real_name: "Example",
@@ -29,6 +31,7 @@ RSpec.describe "log in / log out", type: :request do
     @user.update_attribute(:activated, true)
     post login_path, params: { session: { email:    "user@invalid",
                                       password: "" } }
+    expect(is_logged_in?).to be_falsey
     assert_select "div.alert"
     expect(response).to render_template "sessions/new"
   end
@@ -60,23 +63,17 @@ RSpec.describe "log in / log out", type: :request do
   it "login with remembering" do
     @user.update_attribute(:activated, true)
     log_in_as(@user, remember_me: '1')
+    expect(is_logged_in?).to be_truthy
     expect(cookies['remember_token'].empty?).to be_falsey
   end
 
-  it "login with remembering" do
+  it "login with no remembering" do
     @user.update_attribute(:activated, true)
     log_in_as(@user, remember_me: '1')
     delete logout_path
     log_in_as(@user, remember_me: '0')
+    expect(is_logged_in?).to be_truthy
     expect(cookies['remember_token'].empty?).to be_truthy
-  end
-
-  it "login with cookies" do
-    @user.update_attribute(:activated, true)
-    log_in_as(@user, remember_me: '1')
-    session[:user_id] = nil
-    get root_path
-    assert_select "a[href=?]", logout_path
   end
 
   it "login fails with invalid cookies" do
@@ -85,7 +82,21 @@ RSpec.describe "log in / log out", type: :request do
     session[:user_id] = nil
     @user.update_attribute(:remember_digest, User.digest(User.new_token))
     redirect_to root_path
+    expect(is_logged_in?).to be_falsey
     assert_select "a[href=?]", logout_path, count: 0
+  end
+
+  it "current_user returns right user when session is nil" do
+    @user.update_attribute(:activated, true)
+    remember(@user)
+    expect(@user).to eq current_user
+    expect(is_logged_in?).to be_truthy
+  end
+
+  it "current_user returns nil when remember digest is wrong" do
+    @user.update_attribute(:activated, true)
+    @user.update_attribute(:remember_digest, User.digest(User.new_token))
+    expect(@user).not_to eq current_user
   end
 
   it "friendly-forwarding" do

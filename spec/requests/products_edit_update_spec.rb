@@ -41,6 +41,7 @@ RSpec.describe "products#edit, update", type: :request do
       @stock = Stock.create!(product_id: @product.id, stock: 100000)
       @order = Order.create(user_id: @user.id, ordered_at: Time.zone.now)
       @order1 = Order.create(user_id: @user1.id, ordered_at: Time.zone.now)
+      @file = fixture_file_upload("612ccaeb6b1f0d25324f9a290f31d054_s.jpg", true)
     end
 
   describe "edit" do
@@ -78,13 +79,14 @@ RSpec.describe "products#edit, update", type: :request do
       size_id = 2
       price = 1500
       abstract = "A popular coat"
+      file = @file
       patch product_path(@product), params: { product: { name: name,
                       gender_id: gender_id,
                       category_id: category_id,
                       size_id: size_id,
                       price: price,
                       abstract: abstract,
-                      picture: "rails.png" } }
+                      picture: file } }
       @product.reload
       expect(@product.name).not_to eq name
       expect(@product.gender_id).not_to eq gender_id
@@ -92,6 +94,7 @@ RSpec.describe "products#edit, update", type: :request do
       expect(@product.size_id).not_to eq size_id
       expect(@product.price).not_to eq price
       expect(@product.abstract).not_to eq abstract
+      expect(@product.picture).not_to eq file
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "sessions/new"
@@ -105,13 +108,14 @@ RSpec.describe "products#edit, update", type: :request do
       size_id = 2
       price = 1500
       abstract = "A popular coat"
+      file = @file
       patch product_path(@product), params: { product: { name: name,
                       gender_id: gender_id,
                       category_id: category_id,
                       size_id: size_id,
                       price: price,
                       abstract: abstract,
-                      picture: "rails.png" } }
+                      picture: file } }
       @product.reload
       expect(@product.name).not_to eq name
       expect(@product.gender_id).not_to eq gender_id
@@ -119,12 +123,13 @@ RSpec.describe "products#edit, update", type: :request do
       expect(@product.size_id).not_to eq size_id
       expect(@product.price).not_to eq price
       expect(@product.abstract).not_to eq abstract
+      expect(@product.picture).not_to eq file
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "static_pages/home"
     end
 
-    it "product addition failure with invalid information by logged in admin user" do
+    it "product update failure with invalid information by logged in admin user" do
       log_in_as(@user)
       name = ""
       gender_id = 0
@@ -132,13 +137,14 @@ RSpec.describe "products#edit, update", type: :request do
       size_id = 0
       price = 1000001
       abstract = ""
+      file = @file
       patch product_path(@product), params: { product: { name: name,
                       gender_id: gender_id,
                       category_id: category_id,
                       size_id: size_id,
                       price: price,
                       abstract: abstract,
-                      picture: "rails.png" } }
+                      picture: file } }
       @product.reload
       expect(@product.name).not_to eq name
       expect(@product.gender_id).not_to eq gender_id
@@ -146,11 +152,42 @@ RSpec.describe "products#edit, update", type: :request do
       expect(@product.size_id).not_to eq size_id
       expect(@product.price).not_to eq price
       expect(@product.abstract).not_to eq abstract
+      expect(@product.picture).not_to eq file
       assert_select "div#error_explanation"
       expect(response).to render_template "products/edit"
     end
 
-    it "product addition success with valid information by logged in admin user" do
+    it "product update failure if already ordered" do
+      log_in_as(@user)
+      @detail = Detail.create!(order_id: @order.id, product_id: @product.id, amount: 10)
+      name = "Coat M"
+      gender_id = @gender1.id
+      category_id = @category1.id
+      size_id = @size1.id
+      price = 1500
+      abstract = "A popular coat"
+      file = @file
+      patch product_path(@product), params: { product: { name: name,
+                      gender_id: gender_id,
+                      category_id: category_id,
+                      size_id: size_id,
+                      price: price,
+                      abstract: abstract,
+                      picture: file } }
+      @product.reload
+      expect(@product.name).not_to eq name
+      expect(@product.gender_id).not_to eq gender_id
+      expect(@product.category_id).not_to eq category_id
+      expect(@product.size_id).not_to eq size_id
+      expect(@product.price).not_to eq price
+      expect(@product.abstract).not_to eq abstract
+      expect(@product.picture).not_to eq file
+      follow_redirect!
+      expect(flash[:danger].nil?).to be_falsey
+      expect(response).to render_template "static_pages/home"
+    end
+
+    it "product update success with valid information by logged in admin user" do
       log_in_as(@user)
       name = "Coat M"
       gender_id = @gender1.id
@@ -158,13 +195,14 @@ RSpec.describe "products#edit, update", type: :request do
       size_id = @size1.id
       price = 1500
       abstract = "A popular coat"
+      file = @file
       patch product_path(@product), params: { product: { name: name,
                       gender_id: gender_id,
                       category_id: category_id,
                       size_id: size_id,
                       price: price,
                       abstract: abstract,
-                      picture: "rails.png" } }
+                      picture: file } }
       @product.reload
       expect(@product.name).to eq name
       expect(@product.gender_id).to eq gender_id
@@ -177,6 +215,7 @@ RSpec.describe "products#edit, update", type: :request do
       expect(flash[:success].nil?).to be_falsey
       expect(response).to render_template "products/show"
     end
+
 
   end
 

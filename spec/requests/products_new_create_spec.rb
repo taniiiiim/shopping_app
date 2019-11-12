@@ -38,6 +38,7 @@ RSpec.describe "products#new, create", type: :request do
       @stock = Stock.create!(product_id: @product.id, stock: 100000)
       @order = Order.create(user_id: @user.id, ordered_at: Time.zone.now)
       @order1 = Order.create(user_id: @user1.id, ordered_at: Time.zone.now)
+      @file = fixture_file_upload("612ccaeb6b1f0d25324f9a290f31d054_s.jpg", true)
     end
 
   describe "new" do
@@ -70,14 +71,16 @@ RSpec.describe "products#new, create", type: :request do
 
     it "should redirect when not logged in" do
       count = Product.count
+      counts = Stock.count
       post products_path, params: { product: { name: "Coat M",
                       gender_id: @gender.id,
                       category_id: @category.id,
                       size_id: @size.id,
                       price: 1500,
                       abstract: "A popular coat",
-                      picture: "rails.png" } }
+                      picture: @file } }
       expect(count).to eq Product.count
+      expect(counts).to eq Stock.count
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "sessions/new"
@@ -86,14 +89,16 @@ RSpec.describe "products#new, create", type: :request do
     it "should not access with wrong user" do
       log_in_as(@user1)
       count = Product.count
+      counts = Stock.count
       post products_path, params: { product: { name: "Coat M",
                       gender_id: @gender.id,
                       category_id: @category.id,
                       size_id: @size.id,
                       price: 1500,
                       abstract: "A popular coat",
-                      picture: "rails.png" } }
+                      picture: @file } }
       expect(count).to eq Product.count
+      expect(counts).to eq Stock.count
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "static_pages/home"
@@ -102,14 +107,16 @@ RSpec.describe "products#new, create", type: :request do
     it "product addition failure with invalid information by logged in admin user" do
       log_in_as(@user)
       count = Product.count
+      counts = Stock.count
       post products_path, params: { product: { name: "Coat S",
                       gender_id: nil,
                       category_id: @category.id,
                       size_id: @size.id,
                       price: 1000000000,
                       abstract: "",
-                      picture: "rails.png" } }
+                      picture: @file } }
       expect(count).to eq Product.count
+      expect(counts).to eq Stock.count
       assert_select "div#error_explanation"
       expect(response).to render_template "products/new"
     end
@@ -117,14 +124,16 @@ RSpec.describe "products#new, create", type: :request do
     it "product addition success with valid information by logged in admin user" do
       log_in_as(@user)
       count = Product.count
+      counts = Stock.count
       post products_path, params: { product: { name: "Coat M",
                       gender_id: @gender.id,
                       category_id: @category.id,
                       size_id: @size.id,
                       price: 1500,
                       abstract: "A popular coat",
-                      picture: "rails.png" } }
+                      picture: @file } }
       expect(count).not_to eq Product.count
+      expect(counts).not_to eq Stock.count
       follow_redirect!
       expect(response).to have_http_status :success
       expect(flash[:success].nil?).to be_falsey

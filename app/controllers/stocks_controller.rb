@@ -6,11 +6,12 @@ class StocksController < ApplicationController
     @stock = Stock.find(params[:stock_id])
     @product = Product.find(@stock.product_id)
     if params[:stock][:stock].to_i >= 0
-      if @stock.update_attribute(:stock, params[:stock][:stock])
+      if params[:stock][:stock].to_i <= 100000 && @stock.update_attribute(:stock, params[:stock][:stock])
         flash[:success] = "Stock updated!"
         redirect_to @product
       else
-        render 'products/edit'
+        flash[:danger] = "Too much stocks!"
+        redirect_to edit_product_path(@product)
       end
     else
       flash[:danger] = "invalid stock information!"

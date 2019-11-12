@@ -45,7 +45,7 @@ RSpec.describe UserMailer, type: :mailer do
 
     it "renders the body" do
       expect(mail.body.encoded).to match("To reset your password click the link below")
-      expect(mail.body.encoded).to match(@user.activation_token)
+      expect(mail.body.encoded).to match(@user.reset_token)
       expect(mail.body.encoded).to match(CGI.escape(@user.email))
     end
   end

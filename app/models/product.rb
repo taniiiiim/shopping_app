@@ -14,14 +14,5 @@ class Product < ApplicationRecord
   validates :size_id, presence: :true
   validates :price, presence: :true, numericality: { more_than_or_equal_to: 0, less_than_or_equal_to: 100000}
   validates :abstract, presence: :true, length: { maximum: 512 }
-  validate  :picture_size
-
-  private
-
-  def picture_size
-    if picture.size > 5.megabytes
-      errors.add(:picture, "should be less than 5MB")
-    end
-  end
 
 end

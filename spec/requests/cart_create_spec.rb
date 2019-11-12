@@ -46,6 +46,7 @@ RSpec.describe "carts#create", type: :request do
       expect(countd).to eq Detail.count
       follow_redirect!
       assert_select "div.alert"
+      expect(any_carts?).to be_falsey
       expect(response).to render_template "sessions/new"
     end
 
@@ -58,6 +59,7 @@ RSpec.describe "carts#create", type: :request do
       expect(countd).to eq Detail.count
       follow_redirect!
       expect(flash[:danger].nil?).to be_falsey
+      expect(any_carts?).to be_falsey
       expect(response).to render_template "products/show"
     end
 
@@ -70,6 +72,7 @@ RSpec.describe "carts#create", type: :request do
       expect(countd).to eq Detail.count
       follow_redirect!
       expect(flash[:danger].nil?).to be_falsey
+      expect(any_carts?).to be_falsey
       expect(response).to render_template "products/show"
     end
 

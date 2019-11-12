@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191105021837) do
+ActiveRecord::Schema.define(version: 20191109022159) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string "category"
@@ -94,7 +94,7 @@ ActiveRecord::Schema.define(version: 20191105021837) do
     t.boolean "activated", default: false
     t.string "activation_digest"
     t.datetime "activated_at"
-    t.datetime "reset_digest"
+    t.text "reset_digest"
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

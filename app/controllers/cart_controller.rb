@@ -1,6 +1,9 @@
 class CartController < ApplicationController
+  include OrdersHelper
+
   before_action :logged_in_user
   before_action :available_cart, only: [:show, :edit, :update, :destroy]
+  before_action :correct_user_for_order, only: [:show, :edit, :update, :cancel, :destroy]
   before_action :check_expiration, only: [:show, :edit, :update, :destroy]
 
   def show
@@ -12,11 +15,13 @@ class CartController < ApplicationController
     @product = Product.find(params[:product_id])
     @stock = Stock.find_by(product_id: @product.id)
 
-    if 0 < params[:detail][:amount].to_i && params[:detail][:amount].to_i < @stock.stock
+    if 0 < params[:detail][:amount].to_i && params[:detail][:amount].to_i <= @stock.stock
       if (@order = Order.find_by(user_id: current_user.id, ordered: false))
         if (@detail = @order.details.find_by(product_id: @product.id))
-          @detail.update_attribute(:amount, params[:detail][:amount])
-          @order.update_attribute(:cart_created_at, Time.zone.now)
+          @detail.transaction do
+            @detail.update_attributes!(amount: params[:detail][:amount])
+            @order.update_attributes!(cart_created_at: Time.zone.now)
+          end
           flash[:success] = "Product in your cart updated!"
         else
           Detail.create!(order_id: @order.id, product_id: @product.id, amount: params[:detail][:amount])
@@ -46,15 +51,24 @@ class CartController < ApplicationController
 
   def update
     @order = Order.find(params[:order_id])
-    if @order.update_attributes(code: params[:order][:code], address: params[:order][:address])
-      @order.update_attributes(ordered: true, ordered_at: Time.zone.now)
-      destroy_cart
-      reduce_stocks(@order)
-      @order.send_order_create_email
-      flash[:success] = "Order confirmed!"
-      redirect_to @order
+    @amounts = product_amount(@order)
+
+    if stocks_exist?(@order)
+      @order.transaction do
+        if @order.update_attributes(code: params[:order][:code], address: params[:order][:address])
+          @order.update_attributes(ordered: true, ordered_at: Time.zone.now)
+          reduce_stocks(@order)
+          destroy_cart
+          @order.send_order_create_email
+          flash[:success] = "Order confirmed!"
+          redirect_to @order
+        else
+          render 'edit'
+        end
+      end
     else
-      render 'edit'
+      flash[:danger] = "No stocks for this order! Please check stocks for each product."
+      redirect_to "/cart/#{@order.id}"
     end
   end
 
