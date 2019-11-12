@@ -33,10 +33,6 @@ module CartHelper
       end
     end
 
-    def current_order?(order)
-      order == current_order
-    end
-
     def any_carts?
       !current_order.nil?
     end

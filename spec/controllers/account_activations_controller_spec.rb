@@ -14,6 +14,7 @@ RSpec.describe AccountActivationsController, type: :request do
                  code: "241-0836",
                  address: "神奈川県横浜市旭区万騎が原64-23" } }
     @user = assigns(:user)
+    @order = Order.create!(user_id: @user.id, ordered_at: Time.zone.now)
     follow_redirect!
   end
 
@@ -22,6 +23,8 @@ RSpec.describe AccountActivationsController, type: :request do
     @user.reload
     expect(@user.activated).to be_truthy
     expect(is_logged_in?).to be_truthy
+    follow_redirect!
+    expect(response).to render_template "users/show"
   end
 
   it "activation failure with invalid token" do

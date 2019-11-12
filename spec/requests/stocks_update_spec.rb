@@ -35,7 +35,7 @@ RSpec.describe "stocks#update", type: :request do
                    address: "神奈川県横浜市旭区万騎が原64-23",
                    activated: true,
                    admin: false )
-      @stock = Stock.create!(product_id: @product.id, stock: 100000)
+      @stock = Stock.create!(product_id: @product.id, stock: 10000)
       @order = Order.create(user_id: @user.id, ordered_at: Time.zone.now)
       @order1 = Order.create(user_id: @user1.id, ordered_at: Time.zone.now)
     end
@@ -66,6 +66,18 @@ RSpec.describe "stocks#update", type: :request do
     it "stock update failure with invalid information by logged in admin user" do
       log_in_as(@user)
       stock = -1
+      patch stock_path(@stock), params: { stock_id: @stock.id, stock: { stock: stock } }
+      @stock.reload
+      expect(@stock.stock).not_to eq stock
+      follow_redirect!
+      expect(response).to have_http_status :success
+      expect(flash[:danger].nil?).to be_falsey
+      expect(response).to render_template "products/edit"
+    end
+
+    it "stock update failure with too much stocks by logged in admin user" do
+      log_in_as(@user)
+      stock = 10000000
       patch stock_path(@stock), params: { stock_id: @stock.id, stock: { stock: stock } }
       @stock.reload
       expect(@stock.stock).not_to eq stock

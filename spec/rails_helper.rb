@@ -25,6 +25,8 @@ require 'capybara/rspec'
 
 RSpec.configure do |config|
   config.include TestHelper
+  config.include ActiveJob::TestHelper
+  config.include ActiveSupport::Testing::TimeHelpers
 end
 
 # Checks for pending migrations and applies them before tests are run.

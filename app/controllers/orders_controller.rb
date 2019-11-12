@@ -1,4 +1,6 @@
 class OrdersController < ApplicationController
+  include OrdersHelper
+
   before_action :logged_in_user
   before_action :correct_user_for_order, only: [:show, :edit, :update, :cancel, :destroy]
   before_action :check_expiration,       only: [:edit, :update, :cancel, :destroy]
@@ -28,10 +30,13 @@ class OrdersController < ApplicationController
   def destroy
     @order = Order.find(params[:id])
     @user = User.find(@order.user_id)
-    if current_user?(@user) && @user.authenticate(order_params[:password])
-      @order.destroy
+    if order_params[:password] == order_params[:password_confirmation] && current_user?(@user) && @user.authenticate(order_params[:password])
       @order.send_order_delete_email
-      flash[:success] = "Order deleted"
+      @order.transaction do
+        recover_stocks(@order)
+        @order.destroy
+        flash[:success] = "Order deleted"
+      end
       redirect_to @user
     else
       flash[:danger] = "Invalid password"

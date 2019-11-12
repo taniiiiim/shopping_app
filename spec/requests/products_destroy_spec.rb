@@ -61,6 +61,17 @@ RSpec.describe "products#destroy", type: :request do
       expect(response).to render_template "static_pages/home"
     end
 
+    it "should not destroy if already ordered" do
+      log_in_as(@user)
+      @detail = Detail.create!(order_id: @order.id, product_id: @product.id, amount: 10)
+      count = Product.count
+      delete product_path(@product)
+      expect(count).to eq Product.count
+      follow_redirect!
+      expect(flash[:danger].nil?).to be_falsey
+      expect(response).to render_template "static_pages/home"
+    end
+
     it "product destroy success with valid information by logged in admin user" do
       log_in_as(@user)
       count = Product.count

@@ -48,6 +48,8 @@ RSpec.describe "carts#show", type: :request do
 
   describe "show" do
 
+    include CartHelper
+
     it "should redirect when not logged in" do
       get "/cart/#{@order.id}"
       follow_redirect!
@@ -75,6 +77,7 @@ RSpec.describe "carts#show", type: :request do
       log_in_as(@user)
       post "/cart", params: { product_id: @product.id, detail: { amount: 10 } }
       @order = @user.orders.last
+      @order.reload
       get "/cart/#{@order.id}"
       expect(response).to have_http_status :success
       expect(response).to render_template "cart/show"
@@ -84,11 +87,37 @@ RSpec.describe "carts#show", type: :request do
       log_in_as(@user)
       post "/cart", params: { product_id: @product.id, detail: { amount: 10 } }
       @order = @user.orders.last
-      @order.update_attribute(:cart_created_at, Time.zone.now - 31.minutes)
+      count = Order.count
+
+      @order.update_attribute(:cart_created_at, Time.zone.now - 29.minutes)
       get "/cart/#{@order.id}"
+      expect(count).to eq Order.count
+      expect(response).to have_http_status :success
+      expect(response).to render_template "cart/show"
+
+      @order.update_attribute(:cart_created_at, Time.zone.now - 30.minutes)
+      get "/cart/#{@order.id}"
+      expect(count).not_to eq Order.count
       follow_redirect!
       expect(flash[:danger].nil?).to be_falsey
       expect(response).to render_template "static_pages/home"
+
+      post "/cart", params: { product_id: @product.id, detail: { amount: 10 } }
+      @order = @user.orders.last
+      count = Order.count
+      @order.update_attribute(:cart_created_at, Time.zone.now - 31.minutes)
+      get "/cart/#{@order.id}"
+      expect(count).not_to eq Order.count
+      follow_redirect!
+      expect(flash[:danger].nil?).to be_falsey
+      expect(response).to render_template "static_pages/home"
+    end
+
+    it "order_products properly works" do
+      @detail = Detail.create!(order_id: @order.id, product_id: @product.id, amount: 10)
+      @detail1 = Detail.create!(order_id: @order.id, product_id: @product.id, amount: 10)
+      p = [Product.find(@order.details.first.product_id).id, Product.find(@order.details.last.product_id).id]
+      expect(order_products(@order)).to eq p
     end
 
   end

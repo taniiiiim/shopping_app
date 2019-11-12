@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "orders#cancel, destroy", type: :request do
 
+   include CartHelper
+
     before do
       ActionMailer::Base.deliveries.clear
       @gender = Gender.create!(gender: "Men's")
@@ -36,9 +38,10 @@ RSpec.describe "orders#cancel, destroy", type: :request do
                    address: "神奈川県横浜市旭区万騎が原64-23",
                    activated: true,
                    admin: false )
-      @stock = Stock.create!(product_id: @product.id, stock: 100000)
+      @stock = Stock.create!(product_id: @product.id, stock: 10000)
       @order = Order.create(user_id: @user.id, ordered_at: Time.zone.now)
       @order1 = Order.create(user_id: @user1.id, ordered_at: Time.zone.now)
+      @detail = Detail.create(order_id: @order.id, product_id: @product.id, amount: 10)
     end
 
   describe "cancel" do
@@ -80,8 +83,11 @@ RSpec.describe "orders#cancel, destroy", type: :request do
 
     it "should redirect when not logged in" do
       count = Order.count
-      delete order_path(@order), params: { order: { password: "password", password_confimation: "password" } }
+      stock = 10000
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
+      @stock.reload
       expect(count).to eq Order.count
+      expect(stock).to eq @stock.stock
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "sessions/new"
@@ -90,27 +96,36 @@ RSpec.describe "orders#cancel, destroy", type: :request do
     it "should not access with wrong user" do
       log_in_as(@user1)
       count = Order.count
-      delete order_path(@order), params: { order: { password: "password", password_confimation: "password" } }
+      stock = 10000
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
+      @stock.reload
       expect(count).to eq Order.count
+      expect(stock).to eq @stock.stock
       follow_redirect!
       assert_select "div.alert"
       expect(response).to render_template "static_pages/home"
     end
 
-    it "update failure with invalid information by logged in admin user" do
+    it "delete failure with invalid information by logged in admin user" do
       log_in_as(@user)
       count = Order.count
-      delete order_path(@order), params: { order: { password: "foo", password_confimation: "bar" } }
+      stock = 10000
+      delete order_path(@order), params: { order: { password: "foo", password_confirmation: "bar" } }
+      @stock.reload
       expect(count).to eq Order.count
+      expect(stock).to eq @stock.stock
       expect(flash[:danger].nil?).to be_falsey
       expect(response).to render_template "orders/cancel"
     end
 
-    it "update success with valid information by logged in admin user" do
+    it "delete success with valid information by logged in admin user" do
       log_in_as(@user)
       count = Order.count
-      delete order_path(@order), params: { order: { password: "password", password_confimation: "bar" } }
+      stock = 10000
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
+      @stock.reload
       expect(count).not_to eq Order.count
+      expect(stock).not_to eq @stock.stock
       expect(ActionMailer::Base.deliveries.size).to eq 1
       follow_redirect!
       expect(response).to have_http_status :success
@@ -120,9 +135,17 @@ RSpec.describe "orders#cancel, destroy", type: :request do
 
     it "should not destroy when the order is expired" do
       log_in_as(@user)
+      @order.update_attribute(:ordered_at, Time.zone.now - 29.minute)
+      count = Order.count
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
+      expect(count).not_to eq Order.count
+      @order = Order.create!(user_id: @user.id, ordered_at: Time.zone.now - 30.minute)
+      count = Order.count
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
+      expect(count).to eq Order.count
       @order.update_attribute(:ordered_at, Time.zone.now - 31.minute)
       count = Order.count
-      delete order_path(@order), params: { order: { password: "foo", password_confimation: "bar" } }
+      delete order_path(@order), params: { order: { password: "password", password_confirmation: "password" } }
       expect(count).to eq Order.count
       follow_redirect!
       assert_select "div.alert"

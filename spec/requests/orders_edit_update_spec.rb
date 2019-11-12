@@ -103,7 +103,7 @@ RSpec.describe "orders#edit, update", type: :request do
       expect(response).to render_template "static_pages/home"
     end
 
-    it "update failure with invalid information by logged in admin user" do
+    it "update failure with invalid information by logged in correct user" do
       log_in_as(@user)
       code = "241-083"
       address = ""
@@ -115,7 +115,7 @@ RSpec.describe "orders#edit, update", type: :request do
       expect(response).to render_template "orders/edit"
     end
 
-    it "update success with valid information by logged in admin user" do
+    it "update success with valid information by logged in correct user" do
       log_in_as(@user)
       code = "241-0836"
       address = "神奈川県横浜市旭区万騎が原64-23"

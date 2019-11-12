@@ -14,12 +14,14 @@ class ProductsController < ApplicationController
 
   def create
     @product = Product.new(product_params)
-    if @product.save
-      Stock.create!(product_id: @product.id, stock: 0)
-      flash[:success] = "A new product added!"
-      redirect_to @product
-    else
-      render 'new'
+    @product.transaction do
+      if @product.save
+        Stock.create!(product_id: @product.id, stock: 0)
+        flash[:success] = "A new product added!"
+        redirect_to @product
+      else
+        render 'new'
+      end
     end
   end
 
@@ -41,14 +43,9 @@ class ProductsController < ApplicationController
 
   def destroy
     @product = Product.find(params[:id])
-    if @product
-      @product.destroy
-      flash[:success] = "A product deleted!"
-      redirect_to root_url
-    else
-      flash[:success] = "Delete failed!"
-      redirect_to root_url
-    end
+    @product.destroy
+    flash[:success] = "A product deleted!"
+    redirect_to root_url
   end
 
   private
